@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Home | Deluxe Pizza & Chicken Inn{% endblock %}
+{% block content %}
+<section class="relative isolate min-h-[min(100dvh,52rem)] flex items-center overflow-hidden">
+  <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513104890138-7c749659a591')] bg-cover bg-center scale-105"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-rose-600/80 via-amber-500/70 to-orange-600/85 mix-blend-overlay"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+  <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+  <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+  <div class="absolute inset-0 opacity-[0.12] hero-grid" aria-hidden="true"></div>
+
+  <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28 text-center animate-fade-in">
+    <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs sm:text-sm font-medium text-amber-100 backdrop-blur-md mb-6 shadow-lg">
+      <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
+      Open now · Fast delivery in Gikambura
+    </p>
+    <h1 class="text-balance font-extrabold tracking-tight text-white drop-shadow-lg text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] mb-5 sm:mb-6">
+      <span class="block bg-gradient-to-r from-amber-200 via-yellow-100 to-orange-200 bg-clip-text text-transparent">Delicious pizza</span>
+      <span class="block mt-1 text-white">&amp; crispy chicken — fast 🍕🍗</span>
+    </h1>
+    <p class="text-pretty max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-amber-50/95 mb-8 sm:mb-10 px-1">
+      Hot from the oven, golden crunch, bold flavors — order online and we will bring the feast to your door.
+    </p>
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
+      <a href="{% url 'menu' %}" class="hero-cta-primary inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 sm:px-8 sm:py-4 text-base sm:text-lg font-bold text-zinc-950 shadow-[0_0_40px_-8px_rgba(251,191,36,0.85)] transition hover:scale-[1.02] active:scale-[0.98]">
+        Order now
+        <span aria-hidden="true">→</span>
+      </a>
+      <a href="tel:0743585111" class="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/40 bg-white/10 px-6 py-3.5 sm:px-7 sm:py-4 text-base font-semibold text-white backdrop-blur-md hover:bg-white/20 transition">
+        Call to order
+      </a>
+    </div>
+    <dl class="mt-12 sm:mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-3xl mx-auto text-left">
+      <div class="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 sm:p-4 backdrop-blur-md">
+        <dt class="text-xs uppercase tracking-wider text-amber-200/80">Speed</dt>
+        <dd class="text-sm sm:text-base font-semibold text-white">Quick prep &amp; delivery</dd>
+      </div>
+      <div class="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 sm:p-4 backdrop-blur-md">
+        <dt class="text-xs uppercase tracking-wider text-amber-200/80">Quality</dt>
+        <dd class="text-sm sm:text-base font-semibold text-white">Fresh ingredients daily</dd>
+      </div>
+      <div class="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 sm:p-4 backdrop-blur-md">
+        <dt class="text-xs uppercase tracking-wider text-amber-200/80">Local</dt>
+        <dd class="text-sm sm:text-base font-semibold text-white">Proudly serving Gikambura</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+{% if announcements %}
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <h2 class="text-2xl font-bold mb-4 text-amber-400">Latest Announcements 🎉</h2>
+  <div class="grid md:grid-cols-3 gap-4">
+    {% for item in announcements %}
+    <div class="rounded-xl bg-zinc-900 border border-zinc-800 p-4">
+      <h3 class="font-semibold">{{ item.title }}</h3>
+      <p class="text-zinc-300 text-sm mt-2">{{ item.message }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16">
+  <h2 class="text-2xl font-bold mb-5">Featured Items 🔥</h2>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for product in featured_products %}
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 hover:shadow-xl hover:scale-[1.02] transition">
+      <h3 class="font-bold text-lg">{{ product.name }}</h3>
+      <p class="text-sm text-zinc-400 mt-2">{{ product.description|default:"Delicious and fresh." }}</p>
+      <a href="{% url 'menu' %}" class="inline-block mt-4 text-amber-400">View options →</a>
+    </div>
+    {% empty %}
+    <p class="text-zinc-300">Add featured products from admin to showcase here.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

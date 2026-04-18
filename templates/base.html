@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" {% block html_attrs %}{% endblock %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deluxe Pizza & Chicken Inn - Delicious pizza and crispy chicken delivered fast in Gikambura.">
+  <title>{% block title %}Deluxe Pizza & Chicken Inn{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen {% block body_class %}{% endblock %}">
+  {% block site_header %}
+  <header class="sticky top-0 z-50 bg-black/80 backdrop-blur border-b border-zinc-800" x-data="{ navOpen: false }">
+    <nav class="relative max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <a href="{% url 'home' %}" class="font-bold text-lg sm:text-xl text-amber-400 shrink-0">Deluxe Pizza 🍕</a>
+      <button
+        type="button"
+        class="md:hidden relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-700 text-zinc-100 hover:bg-zinc-900"
+        @click="navOpen = !navOpen"
+        :aria-expanded="navOpen.toString()"
+        aria-controls="site-nav-mobile"
+        aria-label="Toggle menu"
+      >
+        <svg x-show="!navOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg x-show="navOpen" x-cloak class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div id="site-nav" class="hidden md:flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm">
+        <a href="{% url 'home' %}" class="hover:text-amber-400 transition-colors">Home</a>
+        <a href="{% url 'menu' %}" class="hover:text-amber-400 transition-colors">Menu</a>
+        <a href="{% url 'cart' %}" class="hover:text-amber-400 transition-colors">Order</a>
+        <a href="{% url 'order-tracking' %}" class="hover:text-amber-400 transition-colors">Track</a>
+        {% if customer_account %}
+        <span class="text-zinc-300">Hi, {{ customer_account.name }}</span>
+        <form method="post" action="{% url 'customer-logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="hover:text-amber-400 transition-colors">Logout</button>
+        </form>
+        {% else %}
+        <a href="{% url 'customer-login' %}" class="hover:text-amber-400 transition-colors">Login</a>
+        {% endif %}
+        {% if request.user.is_staff %}
+        <a href="{% url 'admin-dashboard' %}" class="hover:text-amber-400 transition-colors">Dashboard</a>
+        {% endif %}
+        <a href="tel:0743585111" class="hover:text-amber-400 transition-colors">Contact</a>
+      </div>
+      <div
+        id="site-nav-mobile"
+        class="md:hidden absolute left-0 right-0 top-full border-b border-zinc-800 bg-zinc-950/95 backdrop-blur shadow-xl"
+        x-show="navOpen"
+        x-cloak
+        x-transition
+        @click.outside="navOpen = false"
+      >
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col gap-3 text-sm">
+          <a href="{% url 'home' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Home</a>
+          <a href="{% url 'menu' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Menu</a>
+          <a href="{% url 'cart' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Order</a>
+          <a href="{% url 'order-tracking' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Track</a>
+          {% if customer_account %}
+          <div class="text-zinc-300 px-2">Hi, {{ customer_account.name }}</div>
+          <form method="post" action="{% url 'customer-logout' %}" class="px-2">
+            {% csrf_token %}
+            <button type="submit" class="py-2 rounded-lg text-left hover:bg-zinc-900 w-full" @click="navOpen = false">Logout</button>
+          </form>
+          {% else %}
+          <a href="{% url 'customer-login' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Login</a>
+          {% endif %}
+          {% if request.user.is_staff %}
+          <a href="{% url 'admin-dashboard' %}" class="py-2 rounded-lg px-2 hover:bg-zinc-900" @click="navOpen = false">Dashboard</a>
+          {% endif %}
+          <a href="tel:0743585111" class="py-2 rounded-lg px-2 hover:bg-zinc-900 text-amber-400 font-medium" @click="navOpen = false">Call 0743585111</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  {% endblock %}
+
+  {% if messages %}
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 mt-4 space-y-2">
+      {% for message in messages %}
+        <div class="rounded-lg px-4 py-3 bg-emerald-600/80">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="{% block main_classes %}pb-24 md:pb-8{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block floating_order_button %}
+    <a href="{% url 'menu' %}" class="fixed z-40 bottom-[max(1rem,env(safe-area-inset-bottom,0px))] right-[max(1rem,env(safe-area-inset-right,0px))] bg-red-600 hover:bg-red-500 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-xl font-semibold text-sm sm:text-base whitespace-nowrap">
+      Order Now 🍗
+    </a>
+  {% endblock %}
+</body>
+</html>

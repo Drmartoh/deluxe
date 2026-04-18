@@ -1,0 +1,60 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block admin_content %}
+{% include "adminpanel/_form_card.html" %}
+<form method="get" class="rounded-xl bg-zinc-900 border border-zinc-800 p-4 grid md:grid-cols-5 gap-3">
+  <input name="q" value="{{ q }}" placeholder="Search product...">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for cat in categories %}
+    <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:'s' %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="sort">
+    <option value="-created_at" {% if sort == "-created_at" %}selected{% endif %}>Newest</option>
+    <option value="created_at" {% if sort == "created_at" %}selected{% endif %}>Oldest</option>
+    <option value="name" {% if sort == "name" %}selected{% endif %}>Name A-Z</option>
+    <option value="-name" {% if sort == "-name" %}selected{% endif %}>Name Z-A</option>
+  </select>
+  <button class="bg-amber-500 text-black rounded-lg">Apply</button>
+</form>
+<div x-data="{open:false,delUrl:''}" class="rounded-xl bg-zinc-900 border border-zinc-800 p-4 overflow-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-zinc-400 border-b border-zinc-800">
+        <th class="py-2">Product</th><th>Category</th><th>Featured</th><th>Active</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in products %}
+      <tr class="border-b border-zinc-800/50">
+        <td class="py-2">{{ row.name }}</td><td>{{ row.category.name }}</td><td>{{ row.is_featured|yesno:"Yes,No" }}</td><td>{{ row.is_active|yesno:"Yes,No" }}</td>
+        <td class="space-x-2">
+          <a class="text-amber-300" href="{% url 'admin-product-edit' row.id %}">Edit</a>
+          <button type="button" class="text-red-400" @click="open=true; delUrl='{% url 'admin-product-delete' row.id %}'">Delete</button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td class="py-3 text-zinc-500" colspan="5">No products yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="mt-3 flex gap-3">
+    {% if products.has_previous %}<a href="?q={{ q }}&category={{ category_filter }}&sort={{ sort }}&page={{ products.previous_page_number }}" class="text-amber-300">Previous</a>{% endif %}
+    <span>Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+    {% if products.has_next %}<a href="?q={{ q }}&category={{ category_filter }}&sort={{ sort }}&page={{ products.next_page_number }}" class="text-amber-300">Next</a>{% endif %}
+  </div>
+  <div x-show="open" x-cloak class="fixed inset-0 bg-black/60 flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-700 rounded-xl p-5 w-full max-w-md">
+      <h3 class="text-lg font-semibold mb-2">Confirm delete</h3>
+      <p class="text-zinc-400 mb-4">This action cannot be undone.</p>
+      <div class="flex gap-2 justify-end">
+        <button type="button" class="px-4 py-2 rounded bg-zinc-700" @click="open=false">Cancel</button>
+        <form :action="delUrl" method="post">
+          {% csrf_token %}
+          <button class="px-4 py-2 rounded bg-red-600">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

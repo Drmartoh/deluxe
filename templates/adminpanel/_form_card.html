@@ -1,0 +1,7 @@
+<div class="admin-panel-card">
+  <form method="post" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="admin-btn-primary">Save</button>
+  </form>
+</div>

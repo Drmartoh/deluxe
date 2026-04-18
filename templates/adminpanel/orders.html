@@ -1,0 +1,71 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block admin_content %}
+<form method="get" class="admin-panel-card mb-4 grid gap-3 md:grid-cols-5 md:items-end">
+  <input name="q" value="{{ q }}" placeholder="Search customer...">
+  <select name="status">
+    <option value="">All status</option>
+    {% for key,label in status_choices %}
+    <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="sort">
+    <option value="-created_at" {% if sort == "-created_at" %}selected{% endif %}>Newest</option>
+    <option value="created_at" {% if sort == "created_at" %}selected{% endif %}>Oldest</option>
+    <option value="-total" {% if sort == "-total" %}selected{% endif %}>Total high-low</option>
+    <option value="total" {% if sort == "total" %}selected{% endif %}>Total low-high</option>
+  </select>
+  <button type="submit" class="admin-btn-primary w-full md:w-auto">Apply</button>
+</form>
+<form method="post" class="admin-panel-card mb-4 space-y-4" x-data="{ selected: [] }">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="bulk_status">
+  <input type="hidden" name="selected_ids_csv" :value="selected.join(',')">
+  <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm text-zinc-400">Bulk status</label>
+      <select name="bulk_status" class="max-w-xs">
+        {% for key,label in status_choices %}
+        <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="rounded-lg bg-gradient-to-r from-rose-600 to-orange-600 px-4 py-2.5 font-semibold text-white shadow-md shadow-rose-600/25 hover:brightness-110 sm:shrink-0">Update Selected</button>
+  </div>
+  <div class="w-full overflow-x-auto rounded-xl border border-white/[0.06] bg-black/20 p-3 sm:p-4">
+    <table class="w-full min-w-[640px] text-sm">
+      <thead>
+        <tr class="text-left text-zinc-400 border-b border-white/10">
+          <th class="py-2">Select</th><th>ID</th><th>Customer</th><th>Phone</th><th>Total</th><th>Payment</th><th>Status</th><th>Items</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in orders %}
+        <tr class="border-b border-white/[0.06] align-top hover:bg-white/[0.02]">
+          <td class="py-2"><input type="checkbox" :value="'{{ row.id }}'" @change="if($event.target.checked){selected.push('{{ row.id }}')}else{selected=selected.filter(i=>i!=='{{ row.id }}')}"></td>
+          <td class="py-2">#{{ row.id }}</td>
+          <td>{{ row.customer.name }}</td>
+          <td>{{ row.customer.phone }}</td>
+          <td>KES {{ row.total }}</td>
+          <td>{{ row.get_payment_method_display }}</td>
+          <td>
+            <span class="text-amber-300">{{ row.get_status_display }}</span>
+          </td>
+          <td class="text-zinc-400">
+            {% for item in row.items.all %}
+              <div>{{ item.variant.product.name }} x {{ item.quantity }}</div>
+            {% endfor %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td class="py-3 text-zinc-500" colspan="8">No orders yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="flex flex-wrap gap-3 border-t border-white/[0.06] px-3 py-3">
+      {% if orders.has_previous %}<a href="?q={{ q }}&status={{ status_filter }}&sort={{ sort }}&page={{ orders.previous_page_number }}" class="font-medium text-amber-400 hover:text-amber-300">Previous</a>{% endif %}
+      <span class="text-zinc-500">Page {{ orders.number }} of {{ orders.paginator.num_pages }}</span>
+      {% if orders.has_next %}<a href="?q={{ q }}&status={{ status_filter }}&sort={{ sort }}&page={{ orders.next_page_number }}" class="font-medium text-amber-400 hover:text-amber-300">Next</a>{% endif %}
+    </div>
+  </div>
+</form>
+{% endblock %}

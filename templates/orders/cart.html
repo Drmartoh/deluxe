@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Cart | Deluxe{% endblock %}
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <h1 class="text-3xl font-bold mb-6">Your Cart 🛒</h1>
+  <div class="space-y-4">
+    {% for item in cart %}
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="min-w-0">
+        <h3 class="font-semibold break-words">{{ item.variant.product.name }} ({{ item.variant.get_size_display }})</h3>
+        <p class="text-sm text-zinc-400">KES {{ item.unit_price }} each</p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 shrink-0">
+        <form method="post" action="{% url 'cart-update' item.variant.id %}" class="flex flex-wrap items-center gap-2">
+          {% csrf_token %}
+          <input type="number" min="1" name="quantity" value="{{ item.quantity }}" class="w-20 bg-zinc-800 rounded px-2 py-1">
+          <button type="submit" class="text-amber-400 text-sm sm:text-base">Update</button>
+        </form>
+        <a href="{% url 'cart-remove' item.variant.id %}" class="text-red-400 text-sm sm:text-base">Remove</a>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-zinc-400">Your cart is empty.</p>
+    {% endfor %}
+  </div>
+  <div class="mt-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+    <p class="text-lg">Total: <span class="font-bold text-amber-400">KES {{ cart.get_total_price }}</span></p>
+    {% if customer_account %}
+      <a href="{% url 'checkout' %}" class="inline-block mt-3 bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg">Proceed to Checkout</a>
+    {% else %}
+      <p class="text-sm text-zinc-300 mt-3">Create an account with a 4-digit PIN to checkout faster.</p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <a href="{% url 'customer-signup' %}?next={% url 'checkout' %}" class="bg-amber-500 text-black px-4 py-2 rounded-lg font-semibold">Create Account</a>
+        <a href="{% url 'customer-login' %}?next={% url 'checkout' %}" class="bg-zinc-800 border border-zinc-700 px-4 py-2 rounded-lg">Login</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Staff Login | Deluxe{% endblock %}
+{% block floating_order_button %}{% endblock %}
+{% block content %}
+<section class="max-w-md mx-auto px-4 sm:px-6 py-12 sm:py-16">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+    <h1 class="text-2xl font-bold mb-4">Admin Panel Login</h1>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="w-full bg-red-600 hover:bg-red-500 py-2 rounded-lg font-semibold">Sign In</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

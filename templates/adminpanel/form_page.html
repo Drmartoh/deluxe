@@ -1,0 +1,5 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block admin_content %}
+<a href="{% url back_url %}" class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-amber-400/90 hover:text-amber-300">← Back</a>
+{% include "adminpanel/_form_card.html" %}
+{% endblock %}

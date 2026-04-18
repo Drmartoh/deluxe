@@ -1,0 +1,118 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block title %}Dashboard | Deluxe{% endblock %}
+{% block admin_content %}
+<section class="space-y-8">
+  <div class="admin-dash-hero relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-rose-600/25 via-zinc-900/80 to-amber-600/20 p-6 sm:p-8 shadow-[0_0_60px_-20px_rgba(251,113,133,0.45)]">
+    <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber-400/20 blur-3xl" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-rose-500/25 blur-3xl" aria-hidden="true"></div>
+    <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-medium text-amber-200/90">Welcome back</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">Kitchen is live — here is your pulse</h2>
+        <p class="mt-2 max-w-xl text-sm text-zinc-400 sm:text-base">Track orders, revenue, and what customers crave most. Jump into any section from the cards below.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'admin-orders' %}" class="admin-chip">Orders</a>
+        <a href="{% url 'admin-products' %}" class="admin-chip">Products</a>
+        <a href="/admin/" class="admin-chip admin-chip--outline">Django Admin</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <article class="admin-stat-card admin-stat-card--rose">
+      <div class="admin-stat-icon bg-rose-500/20 text-rose-200 ring-rose-400/30">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total orders</p>
+      <p class="mt-2 text-3xl font-bold tabular-nums text-white">{{ total_orders }}</p>
+      <p class="mt-1 text-xs text-zinc-500">All time</p>
+    </article>
+    <article class="admin-stat-card admin-stat-card--amber">
+      <div class="admin-stat-icon bg-amber-500/20 text-amber-200 ring-amber-400/30">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Delivered revenue</p>
+      <p class="mt-2 text-2xl font-bold tabular-nums text-white sm:text-3xl">KES {{ revenue }}</p>
+      <p class="mt-1 text-xs text-zinc-500">Completed deliveries only</p>
+    </article>
+    <article class="admin-stat-card admin-stat-card--violet">
+      <div class="admin-stat-icon bg-violet-500/20 text-violet-200 ring-violet-400/30">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">In progress</p>
+      <p class="mt-2 text-3xl font-bold tabular-nums text-white">{{ active_orders }}</p>
+      <p class="mt-1 text-xs text-zinc-500">Not yet delivered</p>
+    </article>
+    <article class="admin-stat-card admin-stat-card--emerald">
+      <div class="admin-stat-icon bg-emerald-500/20 text-emerald-200 ring-emerald-400/30">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      </div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Today</p>
+      <p class="mt-2 text-3xl font-bold tabular-nums text-white">{{ orders_today }}</p>
+      <p class="mt-1 text-xs text-zinc-500">New orders · {{ catalog_items }} active SKUs</p>
+    </article>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-5">
+    <div class="admin-panel-card lg:col-span-3">
+      <div class="flex flex-col gap-1 border-b border-white/[0.06] pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white">Top sellers</h2>
+          <p class="text-sm text-zinc-500">By units sold across all orders</p>
+        </div>
+        <span class="inline-flex w-fit items-center rounded-full bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-300 ring-1 ring-amber-400/25">Live ranking</span>
+      </div>
+      <ul class="mt-5 space-y-4">
+        {% for item in popular_items %}
+        {% widthratio item.total_qty popular_max_qty 100 as pct %}
+        <li class="group">
+          <div class="flex items-center justify-between gap-3 text-sm">
+            <span class="flex min-w-0 items-center gap-2 font-medium text-zinc-200">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500/30 to-rose-600/30 text-xs font-bold text-amber-100 ring-1 ring-white/10">{{ forloop.counter }}</span>
+              <span class="truncate">{{ item.variant__product__name }}</span>
+            </span>
+            <span class="shrink-0 tabular-nums text-amber-300/90">{{ item.total_qty }} sold</span>
+          </div>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-zinc-800">
+            <div class="admin-sale-bar h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 transition-all group-hover:brightness-110" style="width: {{ pct }}%"></div>
+          </div>
+        </li>
+        {% empty %}
+        <li class="rounded-xl border border-dashed border-zinc-700 py-10 text-center text-sm text-zinc-500">No order data yet. When orders roll in, your bestsellers will show up here.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="admin-panel-card lg:col-span-2">
+      <h2 class="text-lg font-bold text-white">Shortcuts</h2>
+      <p class="mt-1 text-sm text-zinc-500">Everything you need in one tap</p>
+      <ul class="mt-5 space-y-2">
+        <li>
+          <a href="{% url 'admin-orders' %}" class="admin-shortcut">
+            <span class="font-medium text-zinc-200">Manage orders</span>
+            <span class="text-zinc-500">Status &amp; bulk updates</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin-products' %}" class="admin-shortcut">
+            <span class="font-medium text-zinc-200">Edit menu</span>
+            <span class="text-zinc-500">Products &amp; photos</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'admin-announcements' %}" class="admin-shortcut">
+            <span class="font-medium text-zinc-200">Announcements</span>
+            <span class="text-zinc-500">Homepage highlights</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/" class="admin-shortcut">
+            <span class="font-medium text-zinc-200">Django Admin</span>
+            <span class="text-zinc-500">Users &amp; advanced tools</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

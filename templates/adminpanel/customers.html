@@ -1,0 +1,36 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block admin_content %}
+<form method="get" class="rounded-xl bg-zinc-900 border border-zinc-800 p-4 grid md:grid-cols-4 gap-3">
+  <input name="q" value="{{ q }}" placeholder="Search customer...">
+  <select name="sort">
+    <option value="-created_at" {% if sort == "-created_at" %}selected{% endif %}>Newest</option>
+    <option value="created_at" {% if sort == "created_at" %}selected{% endif %}>Oldest</option>
+    <option value="name" {% if sort == "name" %}selected{% endif %}>Name A-Z</option>
+    <option value="-name" {% if sort == "-name" %}selected{% endif %}>Name Z-A</option>
+  </select>
+  <button class="bg-amber-500 text-black rounded-lg">Apply</button>
+</form>
+<div class="rounded-xl bg-zinc-900 border border-zinc-800 p-4 overflow-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-zinc-400 border-b border-zinc-800">
+        <th class="py-2">Name</th><th>Phone</th><th>Location</th><th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in customers %}
+      <tr class="border-b border-zinc-800/50">
+        <td class="py-2">{{ row.name }}</td><td>{{ row.phone }}</td><td>{{ row.location }}</td><td>{{ row.created_at }}</td>
+      </tr>
+      {% empty %}
+      <tr><td class="py-3 text-zinc-500" colspan="4">No customers yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="mt-3 flex gap-3">
+    {% if customers.has_previous %}<a href="?q={{ q }}&sort={{ sort }}&page={{ customers.previous_page_number }}" class="text-amber-300">Previous</a>{% endif %}
+    <span>Page {{ customers.number }} of {{ customers.paginator.num_pages }}</span>
+    {% if customers.has_next %}<a href="?q={{ q }}&sort={{ sort }}&page={{ customers.next_page_number }}" class="text-amber-300">Next</a>{% endif %}
+  </div>
+</div>
+{% endblock %}

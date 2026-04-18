@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Create Account | Deluxe{% endblock %}
+{% block content %}
+<section class="max-w-lg mx-auto px-4 sm:px-6 py-10">
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 sm:p-7">
+    <h1 class="text-2xl font-bold">Create your account</h1>
+    <p class="text-zinc-400 text-sm mt-1">Fast checkout with phone number and a simple 4-digit PIN.</p>
+    <form method="post" class="mt-5 space-y-4">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="rounded-lg bg-red-600/30 border border-red-500/40 px-3 py-2 text-sm">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div>
+        <label class="text-sm">Name</label>
+        {{ form.name }}
+        <p class="text-red-300 text-xs mt-1">{{ form.name.errors|striptags }}</p>
+      </div>
+      <div>
+        <label class="text-sm">Phone</label>
+        {{ form.phone }}
+        <p class="text-red-300 text-xs mt-1">{{ form.phone.errors|striptags }}</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm">4-digit PIN</label>
+          {{ form.pin }}
+          <p class="text-red-300 text-xs mt-1">{{ form.pin.errors|striptags }}</p>
+        </div>
+        <div>
+          <label class="text-sm">Confirm PIN</label>
+          {{ form.confirm_pin }}
+          <p class="text-red-300 text-xs mt-1">{{ form.confirm_pin.errors|striptags }}</p>
+        </div>
+      </div>
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-500 py-2.5 rounded-lg font-semibold">Create Account</button>
+    </form>
+    <p class="text-sm text-zinc-400 mt-4">Already have an account? <a href="{% url 'customer-login' %}" class="text-amber-400">Login</a></p>
+  </div>
+</section>
+{% endblock %}
