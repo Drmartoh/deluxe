@@ -30,6 +30,9 @@ DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
+# Required when using HTTPS (e.g. PythonAnywhere); set in .env as comma-separated URLs.
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
 
 # Application definition
 
